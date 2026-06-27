@@ -1,5 +1,5 @@
 from src.core.conf import Base
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer, String, TIMESTAMP, func
 
 class User(Base):
     __tablename__="users"
@@ -9,4 +9,5 @@ class User(Base):
     phone=Column(String(10),unique=True)
     email=Column(String(255),unique=True,nullable=False)
     password=Column(String(255),nullable=False)
+    created_at=Column(TIMESTAMP,server_default=func.now())
 

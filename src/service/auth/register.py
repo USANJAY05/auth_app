@@ -10,8 +10,8 @@ password_hash = PasswordHash.recommended()
 def register_user(data):
     try:
         with session_local() as session:
-            existance_user=session.query(User).filter(User.email==data.email).first()
-            print(existance_user)
+            # existance_user=session.query(User).filter(User.email==data.email).first()
+            # print(existance_user)
             hashed_password = password_hash.hash(data.password)
 
             new_user = User(
