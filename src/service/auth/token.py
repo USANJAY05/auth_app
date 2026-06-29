@@ -8,7 +8,7 @@ __token=os.getenv("JWT_TOKEN")
 
 def token_encoder(id):
     return jwt.encode(
-        payload={
+        {
             "user_id":id,
             "exp":int(time()+900)
         },
@@ -19,7 +19,7 @@ def token_encoder(id):
 
 def toekn_decoder(token):
     return jwt.decode(
-        token=token,
-        key=__token,
-        algorithm="HS256"
+        token,
+        __token,
+        algorithms=["HS256"]
     )
