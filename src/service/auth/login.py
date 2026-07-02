@@ -2,7 +2,7 @@ from src.core.conf import session_local
 from src.models.users import User
 from pwdlib import PasswordHash
 from fastapi import HTTPException
-from src.service.auth.token import token_encoder
+from src.service.auth.token import access_token, refresh_token
 
 password_hash = PasswordHash.recommended()
 
@@ -15,6 +15,7 @@ def login_user(data):
             .filter(User.email == data.email)
             .first()
         )
+        print(user)
 
         if not user:
             raise HTTPException(
@@ -27,6 +28,12 @@ def login_user(data):
                 status_code=400,
                 detail="Invalid username or password"
             )
-        token=token_encoder(data.email)
+        atoken=access_token(data.email)
+        rtoken=refresh_token(data.email)
 
-        return {"email":data.email, "token":token}
+        return {
+            "user": user,
+            "access_token": atoken,
+            "refresh_token": rtoken,
+            "token_type": "bearer"
+        }
