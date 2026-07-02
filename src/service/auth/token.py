@@ -6,11 +6,19 @@ load_dotenv()
 
 __token=os.getenv("JWT_TOKEN")
 
-def token_encoder(id):
+def access_token(id):
+    token=token_encoder(id,int(time()+900))
+    return token
+
+def refresh_token(id):
+    token=token_encoder(id,int(time()+9000))
+    return token
+
+def token_encoder(id,time):
     return jwt.encode(
         {
             "user_id":id,
-            "exp":int(time()+900)
+            "exp":time
         },
         key=__token,
         algorithm="HS256",
