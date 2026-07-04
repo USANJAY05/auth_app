@@ -2,10 +2,9 @@ from src.core.conf import session_local
 from src.models.users import User
 from pwdlib import PasswordHash
 from fastapi import HTTPException
-from src.service.auth.token import access_token_gen, refresh_token_gen
+from src.utils.token import access_token_gen, refresh_token_gen
 
 password_hash = PasswordHash.recommended()
-
 
 def login_user(data):
     try:

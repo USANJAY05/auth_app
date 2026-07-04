@@ -19,9 +19,3 @@ def register_user(user: UserCreate):
 def login_user(user: UserLogin):
     data=login.login_user(user)
     return data
-
-@router.post('/authorization')
-async def authorize_user(token: Request):
-    token= await token.json()
-    data = authorization.authorization(token)
-    return data

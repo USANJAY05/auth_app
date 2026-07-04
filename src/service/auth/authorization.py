@@ -1,5 +1,5 @@
-from src.service.auth.token import access_token_decoder
+from src.utils.token import refresh_token_decoder
 
 def authorization(token):
-    data=access_token_decoder(token)
-    return data
+    response=refresh_token_decoder(token)
+    return response
