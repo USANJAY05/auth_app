@@ -1,7 +1,8 @@
 from fastapi import APIRouter
 from src.schema.auth import UserCreate, UserLogin
-from src.service.auth import register, login
-from src.schema.users import UserResponse
+from src.service.auth import register, login, authorization
+from src.schema.users import UserResponse, UserLoginResponse
+from fastapi import Request
 
 router=APIRouter(
     tags=['AUTH'],
@@ -14,7 +15,13 @@ def register_user(user: UserCreate):
     return data
 
 
-@router.post('/login')
+@router.post('/login', response_model=UserLoginResponse)
 def login_user(user: UserLogin):
     data=login.login_user(user)
+    return data
+
+@router.post('/authorization')
+async def authorize_user(token: Request):
+    token= await token.json()
+    data = authorization.authorization(token)
     return data
