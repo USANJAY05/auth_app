@@ -27,3 +27,5 @@ def register_user(data):
     except IntegrityError as e:
         session.rollback()
         raise HTTPException(status_code=400,detail="User already exists")
+    except Exception as e:
+        raise HTTPException(status_code=500,detail="Backend Failed to connect with DB")

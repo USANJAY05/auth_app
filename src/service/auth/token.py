@@ -1,33 +1,25 @@
-from jose import jwt
-from dotenv import load_dotenv
-import os
 from time import time
-load_dotenv()
+from fastapi import HTTPException
+from jose.exceptions import ExpiredSignatureError
+from src.utils.token import token_decoder,token_encoder
 
-__token=os.getenv("JWT_TOKEN")
 
-def access_token(id):
-    token=token_encoder(id,int(time()+900))
-    return token
+def access_token_gen(id):
+    response=token_encoder(id,int(time()+900),'access_token')
+    return response
 
-def refresh_token(id):
-    token=token_encoder(id,int(time()+9000))
-    return token
+def refresh_token_gen(id):
+    response=token_encoder(id,int(time()+9000),'refresh_token')
+    return response
 
-def token_encoder(id,time):
-    return jwt.encode(
-        {
-            "user_id":id,
-            "exp":time
-        },
-        key=__token,
-        algorithm="HS256",
-        
-    )
+def access_token_decoder(token):
+    response=token_decoder(token.get('token'))
+    if response.get("token_type") != "access_token":
+        raise HTTPException(detail="Invalid access token", status_code=401)
+    return response
 
-def toekn_decoder(token):
-    return jwt.decode(
-        token,
-        __token,
-        algorithms=["HS256"]
-    )
+def refresh_token_decoder(token):
+    response=token_decoder(token.get('token'))
+    if response.get("token_type") != "refresh_token":
+        raise HTTPException(detail="Invalid refresh token", status_code=401)
+    return response
