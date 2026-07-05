@@ -14,7 +14,7 @@ def refresh(token):
             detail="Invalid refresh token"
         )
 
-    if redis_client.exists(f"BLOCK_REFRESH_{token.get('refresh_token')}"):
+    if redis_client.exists(f"BLOCK_REFRESH_{token.refresh_token}"):
         raise HTTPException(
             status_code=401,
             detail="Refresh token already Revoked"
@@ -40,7 +40,7 @@ def refresh(token):
 
         ttl = max(1, int(exp - now))
         redis_client.setex(
-            f"BLOCK_REFRESH_{token.get('refresh_token')}",
+            f"BLOCK_REFRESH_{token.refresh_token}",
             ttl,
             "1"
         )

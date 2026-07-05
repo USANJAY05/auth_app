@@ -9,7 +9,6 @@ from fastapi.responses import HTMLResponse
 def block_token(token):
 
     access_token_res=access_token_decoder(token)
-    print(access_token_res)
 
     if not access_token_res:
         raise HTTPException(
@@ -30,7 +29,7 @@ def block_token(token):
             detail="Invalid refresh token"
         )
 
-    if redis_client.exists(f"BLOCK_REFRESH_{token.get('refresh_token')}"):
+    if redis_client.exists(f"BLOCK_REFRESH_{token.refresh_token}"):
         raise HTTPException(
             status_code=401,
             detail="Refresh token already Revoked"
@@ -49,10 +48,9 @@ def block_token(token):
 
     ttl = max(1, int(exp - now))
     redis_client.setex(
-        f"BLOCK_REFRESH_{token.get('refresh_token')}",
+        f"BLOCK_REFRESH_{token.refresh_token}",
         ttl,
         "1"
     )
-    print(f"BLOCK_REFRESH_{token}")
 
     return HTMLResponse(content="Your refresh token successfully revoked", status_code=200)
