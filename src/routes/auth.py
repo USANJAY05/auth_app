@@ -3,6 +3,7 @@ from src.schema.auth import UserCreate, UserLogin
 from src.service.auth import register, login, authorization
 from src.schema.users import UserResponse, UserLoginResponse
 from fastapi import Request
+from src.service.token.block import block_token
 
 router=APIRouter(
     tags=['AUTH'],
@@ -21,5 +22,7 @@ def login_user(user: UserLogin):
     return data
 
 @router.post('logout')
-def logout_user():
-    pass
+async def logout_user(token: Request):
+    token = await token.json()
+    res= block_token(token)
+    return res
