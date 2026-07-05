@@ -33,6 +33,7 @@ def token_decoder(token_string):
             key=__token,
             algorithms=["HS256"]
         )
+
     except ExpiredSignatureError:
         raise HTTPException(
             detail="Token Expired Please login again to get new token",
@@ -62,13 +63,13 @@ def refresh_token_gen(user_id):
 
 
 def access_token_decoder(token_data):
-    response=token_decoder(token_data.get('token'))
+    response=token_decoder(token_data.get('access_token'))
     if response.get("token_type") != "access_token":
         raise HTTPException(detail="Invalid access token", status_code=401)
     return response
 
 def refresh_token_decoder(token_data):
-    response=token_decoder(token_data.get('token'))
+    response=token_decoder(token_data.get('refresh_token'))
     if response.get("token_type") != "refresh_token":
         raise HTTPException(detail="Invalid refresh token", status_code=401)
     return response

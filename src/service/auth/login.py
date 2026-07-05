@@ -15,7 +15,6 @@ def login_user(data):
                 .filter(User.email == data.email)
                 .first()
             )
-            print(user)
 
             if not user:
                 raise HTTPException(

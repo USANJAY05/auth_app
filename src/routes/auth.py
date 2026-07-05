@@ -19,3 +19,7 @@ def register_user(user: UserCreate):
 def login_user(user: UserLogin):
     data=login.login_user(user)
     return data
+
+@router.post('logout')
+def logout_user():
+    pass

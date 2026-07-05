@@ -8,17 +8,16 @@ REFRESH_ROTATION_THRESHOLD = duration_to_seconds(hours=12)
 
 def refresh(token):
     res = refresh_token_decoder(token)
-
     if not res:
         raise HTTPException(
             status_code=401,
             detail="Invalid refresh token"
         )
 
-    if redis_client.exists(f"BLOCK_REFRESH_{token}"):
+    if redis_client.exists(f"BLOCK_REFRESH_{token.get('refresh_token')}"):
         raise HTTPException(
             status_code=401,
-            detail="Refresh token already used"
+            detail="Refresh token already Revoked"
         )
 
     now = time()
@@ -41,7 +40,7 @@ def refresh(token):
 
         ttl = max(1, int(exp - now))
         redis_client.setex(
-            f"BLOCK_REFRESH_{token}",
+            f"BLOCK_REFRESH_{token.get('refresh_token')}",
             ttl,
             "1"
         )
