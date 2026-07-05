@@ -2,6 +2,7 @@ from src.utils.token import refresh_token_decoder, refresh_token_gen, access_tok
 from src.utils.time_util import duration_to_seconds
 from time import time
 from fastapi import HTTPException
+from src.core.redis import redis_client
 
 REFRESH_ROTATION_THRESHOLD = duration_to_seconds(hours=12)
 
@@ -14,11 +15,18 @@ def refresh(token):
             detail="Invalid refresh token"
         )
 
-    exp = res.get("exp")
-    user_id = res.get("id")
+    if redis_client.exists(f"BLOCK_REFRESH_{token}"):
+        raise HTTPException(
+            status_code=401,
+            detail="Refresh token already used"
+        )
 
-    # Optional safety check if decoder doesn't validate exp
-    if exp <= time():
+    now = time()
+
+    exp = res["exp"]
+    user_id = res["user_id"]
+
+    if exp <= now:
         raise HTTPException(
             status_code=401,
             detail="Refresh token expired"
@@ -28,7 +36,14 @@ def refresh(token):
         "access_token": access_token_gen(user_id)
     }
 
-    if exp - time() < REFRESH_ROTATION_THRESHOLD:
+    if exp - now < REFRESH_ROTATION_THRESHOLD:
         response["refresh_token"] = refresh_token_gen(user_id)
+
+        ttl = max(1, int(exp - now))
+        redis_client.setex(
+            f"BLOCK_REFRESH_{token}",
+            ttl,
+            "1"
+        )
 
     return response
